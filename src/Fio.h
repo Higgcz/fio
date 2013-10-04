@@ -1,22 +1,23 @@
 //
 //  Fio.h
-//  HadgehogSP
 //
-//  Created by Vojtech Micka on 2.10.13.
-//  Copyright (c) 2013 Aisacorp. All rights reserved.
+//  Created by Jan Sten Adamek && Vojtech Micka on 2.10.13.
+//  Copyright (c) 2013 All rights reserved.
 //
 
 #ifndef __Fio__Fio__
 #define __Fio__Fio__
 
+#include <sys/types.h>
+
 class Fio {
-    static const size_t B_SIZE = 4096;
+    enum { B_SIZE = 4096 }; // Buffer size
 
     int _fileDescriptor;
     char _buffer[B_SIZE];
     char _stopper;          // If the buffer is full, the NULL to stop reading goes here
-    char * _ptr;
-    ssize_t _gcount;
+    char * _ptr;            // Pointer to next byte in buffer to read
+    ssize_t _gcount;        // Length of data in buffer
     bool _fileFinish;
     bool _finish;
     

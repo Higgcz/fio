@@ -1,15 +1,13 @@
 //
 //  Fio.cpp
-//  HadgehogSP
 //
-//  Created by Vojtech Micka on 2.10.13.
-//  Copyright (c) 2013 Aisacorp. All rights reserved.
+//  Created by Jan Sten Adamek && Vojtech Micka on 2.10.13.
+//  Copyright (c) 2013 All rights reserved.
 //
 
 #include "Fio.h"
 #include <unistd.h>
-
-using namespace std;
+#include <memory.h>
 
 Fio::Fio(int fileDescriptor):_fileDescriptor(fileDescriptor),_ptr(_buffer + B_SIZE),_gcount(0),_fileFinish(false),_finish(false) {
     _readToBuffer();
@@ -20,7 +18,7 @@ Fio::~Fio() {
 
 void Fio::_readToBuffer() {
     
-    ptrdiff_t left = _buffer + B_SIZE - _ptr;
+    ssize_t left = _buffer + B_SIZE - _ptr;
 
     if (left > 0) {
         memcpy(_buffer, _ptr, left);
