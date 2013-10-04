@@ -9,16 +9,12 @@
 #ifndef __Fio__Fio__
 #define __Fio__Fio__
 
-#include <iostream>
-
-using namespace std;
-
-#define B_SIZE 4096
-
 class Fio {
+    static const size_t B_SIZE = 4096;
+
     int _fileDescriptor;
     char _buffer[B_SIZE];
-    char _stopper;
+    char _stopper;          // If the buffer is full, the NULL to stop reading goes here
     char * _ptr;
     ssize_t _gcount;
     bool _fileFinish;

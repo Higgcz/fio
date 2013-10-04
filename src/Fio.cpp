@@ -9,6 +9,8 @@
 #include "Fio.h"
 #include <unistd.h>
 
+using namespace std;
+
 Fio::Fio(int fileDescriptor):_fileDescriptor(fileDescriptor),_ptr(_buffer + B_SIZE),_gcount(0),_fileFinish(false),_finish(false) {
     _readToBuffer();
 }
