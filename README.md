@@ -29,4 +29,16 @@ Fio fio = new Fio(0);
 
 Fio currently implements only two methods <code>nextLong()</code> and <code>nextInt()</code>.
 
-Both method returns next number available on the input.
+Both method returns next number available on the input or zero if there are no next number.
+
+To determine that reading is finish, there are two methods:
+```cpp
+bool isFileFinish()
+bool isFinish()
+```
+
+#### isFileFinish ####
+Returns **true** if the reading from input is over, but the buffer doesn't have to be empty.
+
+#### isFinish ####
+Returns **true** if the <code>isFileFinish</code> returns **true** and if the buffer is empty.

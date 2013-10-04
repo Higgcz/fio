@@ -31,6 +31,7 @@ public:
     long nextLong();
     int nextInt();
     
+    bool isFileFinish() {return _fileFinish;};
     bool isFinish() {return _finish;};
     
 private:
