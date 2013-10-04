@@ -7,7 +7,6 @@
 //
 
 #include "Fio.h"
-#include <assert.h>
 #include <unistd.h>
 
 Fio::Fio(int fileDescriptor):_fileDescriptor(fileDescriptor),_ptr(_buffer + B_SIZE),_gcount(0),_fileFinish(false),_finish(false) {
@@ -18,7 +17,6 @@ Fio::~Fio() {
 }
 
 void Fio::_readToBuffer() {
-    assert(!_finish);
     
     ptrdiff_t left = _buffer + B_SIZE - _ptr;
 
@@ -30,7 +28,6 @@ void Fio::_readToBuffer() {
     _ptr = _buffer;
     
     _buffer[_gcount] = 0;
-    assert(_buffer[0] != 0);
     
     if (_gcount < B_SIZE) {
         _fileFinish = true;
