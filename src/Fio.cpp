@@ -6,10 +6,16 @@
 //
 
 #include "Fio.h"
+
 #include <unistd.h>
 #include <memory.h>
 
-Fio::Fio(int fileDescriptor):_fileDescriptor(fileDescriptor),_ptr(_buffer + B_SIZE),_gcount(0),_fileFinish(false),_finish(false) {
+Fio::Fio(int fileDescriptor):
+    _fileDescriptor(fileDescriptor),
+    _ptr(_buffer + B_SIZE),
+    _gcount(0),
+    _fileFinish(false),
+    _finish(false) {
     _readToBuffer();
 }
 
@@ -22,6 +28,8 @@ void Fio::_readToBuffer() {
 
     if (left > 0) {
         memcpy(_buffer, _ptr, left);
+    } else {
+        left = 0;
     }
     
     _gcount = read(_fileDescriptor, _buffer + left, B_SIZE - left) + left;
@@ -66,9 +74,11 @@ long Fio::nextLong() {
         if (_fileFinish)
         {
             _finish = true;
-            return 0;
+            return num;
         }
+        
         _readToBuffer();
+        tPtr = _ptr;
         num = _parseLong(tPtr);
     }
     
