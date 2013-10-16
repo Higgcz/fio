@@ -25,15 +25,20 @@ public:
     Fio(int fileDescriptor);
     ~Fio();
     
-    long nextLong();
-    int nextInt();
-    
     bool isFileFinish() {return _fileFinish;};
     bool isFinish() {return _finish;};
+    
+    char * nextWord();
+    bool nextLine();
+    bool nextLine(char *&line);
+    
+    long nextLong();
+    int nextInt();
     
 private:
     void _readToBuffer();
     long _parseLong(char *&ptr);
+    bool _parseLine(char *&ptr);
 };
 
 #endif /* defined(__Fio__Fio__) */
