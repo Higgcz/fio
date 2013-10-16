@@ -13,8 +13,6 @@ import java.nio.*;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import javax.swing.SwingUtilities;
-
 public final class Fio implements Iterator<String>, Closeable
 {
 	
@@ -140,8 +138,8 @@ public final class Fio implements Iterator<String>, Closeable
         else				  return result;
     }
 
-	// ---- [helpers] ------
-    
+    // ---- [helpers] ------
+
     private final void rollback()
     {
         this . position	 =  save;
@@ -176,7 +174,7 @@ public final class Fio implements Iterator<String>, Closeable
         
         buf . position( offset );
         
-        if (offset > 0)
+        if( offset > 0 )
         {
             buf . compact();
             
@@ -189,15 +187,14 @@ public final class Fio implements Iterator<String>, Closeable
             return true;
         }
 
-        CharBuffer _buf = CharBuffer.allocate(buf.capacity() << 1);
+        CharBuffer _buf = CharBuffer.allocate( buf.capacity()<<1 );
 
         _buf . put  ( buf );
         _buf . flip (     );
 
-        if (save != -1) save -= offset;
-
-        this . position  -=  offset;
-        this . buf       =   _buf;
+        if( save != -1 ) save      -=  offset;
+        this .           position  -=  offset;
+        this .           buf       =   _buf;
 
         this . matcher . reset ( buf );
         
@@ -336,7 +333,6 @@ public final class Fio implements Iterator<String>, Closeable
         return null;
     }
 
-
     public void close()
     {
         if( closed ) return;
@@ -348,22 +344,21 @@ public final class Fio implements Iterator<String>, Closeable
         this . closed  =  true;
     }
 
-    public void remove()
-    { throw new UnsupportedOperationException(); }
-
     private final boolean hasNext( Pattern pattern )
     {
-    	save = position;
+        this . save  = this . position;
         
-        while (true)
+        while( true )
         {
-            if (find_token(pattern) != null)
+            if( find_token(pattern) != null )
             {
-                valid = true;
+                this . valid  =  true;
+
                 rollback();
+
                 return true;
             }
-            if (input)	read();
+            if( input )  read();
             else
             {
             	rollback();
@@ -376,14 +371,16 @@ public final class Fio implements Iterator<String>, Closeable
     {
         while( true )
         {
-            String token = find_token(pattern);
+            String token  =  find_token( pattern );
+
             if( token != null )
             {
-                valid	 = true;
-                skipped  = false;
+                this . valid    =  true;
+                this . skipped  =  false;
+                
                 return token;
             }
-            if (input) read();
+            if( input )  read();
         }
     }
     
@@ -391,32 +388,35 @@ public final class Fio implements Iterator<String>, Closeable
     {
         while( true )
         {
-            String token = find(pattern, horizon);
+            String token = find( pattern, horizon );
+
             if( token != null )
             {
-                valid = true;
+                this . valid = true;
+
                 return token;
             }
-            if( input ) read();
-            else break;
+            if( input )  read();
+            else         break;
         }
         return null;
     }
     
+    //---- [unused] ------
+    
+    @Deprecated
+    public void remove()
+    { throw new UnsupportedOperationException(); }
+    
     // ---- [monkey test] ------
     
-    public static void main(String ... args)
+    public static void main( String ... args )
     {
-    	Fio fio = new Fio(System.in);
-    
-    	SwingUtilities.invokeLater(new Runnable(){public void run(){
-    		for(int i=0; i<10000; i++)System.out.println(i);
-    	}});
-    	
-    	while(fio.hasNextShort()) System.out.println("RED: "+fio.nextShort());
-    	
-    	fio.close();
-    }
+        Fio fio = new Fio( System.in );
 
+        while( fio.hasNextShort() ) System.out.println("RED: "+fio.nextShort());
+
+        fio.close();
+    }
 
 }
