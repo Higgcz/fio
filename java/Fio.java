@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
 public final class Fio implements Iterator<String>, Closeable
 {
 	
-	// ---- [constants] ------
+    // ---- [constants] ------
 
     private  static  final    int B_SIZE        =  4096;
     
@@ -27,7 +27,7 @@ public final class Fio implements Iterator<String>, Closeable
     private  static  Pattern  INTEGER           =  Pattern.compile ( "([\\+-]?\\d+)([eE][\\+-]?\\d+)?"                                       );
     private  static  Pattern  LINE              =  Pattern.compile ( ".*(\r\n|[\n\r\u2028\u2029\u0085])|.+$"                                 );
 
-	// ---- [attrs] ------
+    // ---- [attrs] ------
     
     private  CharBuffer         buf        =  null;
     
@@ -43,7 +43,7 @@ public final class Fio implements Iterator<String>, Closeable
     private  boolean            valid      =  false;
     private  boolean            closed     =  false;
 
-	// ---- [ctor] ------
+    // ---- [ctor] ------
     
     private Fio( InputStream source )
     {
@@ -59,7 +59,7 @@ public final class Fio implements Iterator<String>, Closeable
         this . matcher . useAnchoringBounds   ( false );
     }
 
-	// ---- [api] ------
+    // ---- [api] ------
 
     public boolean hasNext()
     {
@@ -98,7 +98,7 @@ public final class Fio implements Iterator<String>, Closeable
     public void remove()
     { throw new UnsupportedOperationException(); }
 
-    public boolean hasNext(Pattern pattern)
+    private final boolean hasNext( Pattern pattern )
     {
     	save = position;
         
@@ -119,15 +119,15 @@ public final class Fio implements Iterator<String>, Closeable
         }
     }
 
-    public String next(Pattern pattern)
+    private final String next( Pattern pattern )
     {
-        while (true)
+        while( true )
         {
             String token = find_token(pattern);
-            if (token != null)
+            if( token != null )
             {
-                valid	= true;
-                skipped		= false;
+                valid	 = true;
+                skipped  = false;
                 return token;
             }
             if (input) read();
@@ -136,30 +136,31 @@ public final class Fio implements Iterator<String>, Closeable
 
     public boolean hasNextLine()
     {
-    	save = position;
+    	this . save    =  position;
 
-        String result = scan(LINE, 0);
+        String result  =  scan ( LINE , 0 );
         
-        if (result != null && valid)
+        if( result != null && valid )
         {
-            MatchResult mr = matcher.toMatchResult();
-            String lineSep = mr.group(1);
-            if (lineSep != null)
-                result = result.substring(0, result.length() - lineSep.length());
+            MatchResult mr  =  matcher . toMatchResult (   );
+            String lineSep  =  mr      . group         ( 1 );
+            
+            if( lineSep != null )
+                result = result.substring ( 0 , result.length() - lineSep.length() );
         }
         
         rollback();
         
-        return (result != null);
+        return result != null;
     }
 
     public String nextLine()
     {
-        String result = scan(LINE, 0);
+        String result = scan( LINE, 0 );
         
-        if (result == null || !valid) throw new NoSuchElementException("No line found");
+        if( result == null || !valid ) throw new NoSuchElementException("No line found");
         
-        String line = matcher.toMatchResult().group(1);
+        String line = matcher . toMatchResult() . group(1);
         
         if( line != null   )  result = result.substring(0, result.length() - line.length());
         if( result == null )  throw new NoSuchElementException();
@@ -168,10 +169,10 @@ public final class Fio implements Iterator<String>, Closeable
 
     private String scan(Pattern pattern, int horizon)
     {
-        while (true)
+        while( true )
         {
             String token = find(pattern, horizon);
-            if (token != null)
+            if( token != null )
             {
                 valid = true;
                 return token;
@@ -184,11 +185,11 @@ public final class Fio implements Iterator<String>, Closeable
 
     public  boolean  hasNextBoolean ()  { return hasNext ( BOOLEAN );                       }
     public  boolean  hasNextByte    ()  { return hasNext ( INTEGER );                       }
-    public  boolean	 hasNextShort   ()  { return hasNext ( INTEGER );                       }
-    public  boolean	 hasNextInt     ()  { return hasNext ( INTEGER );                       }
-    public  boolean	 hasNextDecimal ()  { return hasNext ( DECIMAL );                       }
+    public  boolean  hasNextShort   ()  { return hasNext ( INTEGER );                       }
+    public  boolean  hasNextInt     ()  { return hasNext ( INTEGER );                       }
+    public  boolean  hasNextDecimal ()  { return hasNext ( DECIMAL );                       }
     
-    public  boolean	 nextBoolean    ()  { return Boolean . parseBoolean ( next(BOOLEAN) );  }
+    public  boolean  nextBoolean    ()  { return Boolean . parseBoolean ( next(BOOLEAN) );  }
     public  byte     nextByte       ()  { return Byte    . parseByte    ( next(INTEGER) );  }
     public  short    nextShort      ()  { return Short   . parseShort   ( next(INTEGER) );  }
     public  int      nextInt        ()  { return Integer . parseInt     ( next(INTEGER) );  }
@@ -213,7 +214,8 @@ public final class Fio implements Iterator<String>, Closeable
         this . buf . limit    ( buf.capacity() );
 
         int n = 0;
-        try						{ n = source.read( buf ); }
+
+        try                     { n = source.read( buf ); }
         catch (IOException ioe)	{ n = -1;				  }
 
         if( n == -1 ) input = false;
@@ -272,9 +274,8 @@ public final class Fio implements Iterator<String>, Closeable
 
     private final String find_token( Pattern pattern )
     {
-    	this . valid = false;
-        
-    	this . matcher.usePattern(WHITESPACE);
+        this . valid = false;
+        this . matcher.usePattern(WHITESPACE);
         
         if( !skipped )
         {
@@ -354,9 +355,8 @@ public final class Fio implements Iterator<String>, Closeable
 
     private final String find( Pattern pattern, int horizon )
     {
-    	this . valid = false;
-    	
-    	this . matcher . usePattern( pattern );
+        this . valid = false;
+        this . matcher . usePattern( pattern );
         
         int bufferLimit   =  buf.limit();
         int horizonLimit  =  -1;
@@ -403,7 +403,7 @@ public final class Fio implements Iterator<String>, Closeable
         this . closed  =  true;
     }
 
-	// ---- [monkey test] ------
+    // ---- [monkey test] ------
     
     public static void main(String ... args)
     {
