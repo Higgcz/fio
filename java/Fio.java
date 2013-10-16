@@ -61,6 +61,18 @@ public final class Fio implements Iterator<String>, Closeable
 
     // ---- [api] ------
 
+    public  boolean  hasNextBoolean ()  { return hasNext ( BOOLEAN );                         }
+    public  boolean  hasNextByte    ()  { return hasNext ( INTEGER );                         }
+    public  boolean  hasNextShort   ()  { return hasNext ( INTEGER );                         }
+    public  boolean  hasNextInt     ()  { return hasNext ( INTEGER );                         }
+    public  boolean  hasNextDecimal ()  { return hasNext ( DECIMAL );                         }
+    
+    public  boolean  nextBoolean    ()  { return Boolean . parseBoolean ( next( BOOLEAN ) );  }
+    public  byte     nextByte       ()  { return Byte    . parseByte    ( next( INTEGER ) );  }
+    public  short    nextShort      ()  { return Short   . parseShort   ( next( INTEGER ) );  }
+    public  int      nextInt        ()  { return Integer . parseInt     ( next( INTEGER ) );  }
+    public  float    nextDecimal    ()  { return Float   . parseFloat   ( next( DECIMAL ) );  }
+
     public boolean hasNext()
     {
     	save = position;
@@ -89,45 +101,6 @@ public final class Fio implements Iterator<String>, Closeable
             {
                 valid = true;
                 skipped = false;
-                return token;
-            }
-            if (input) read();
-        }
-    }
-
-    public void remove()
-    { throw new UnsupportedOperationException(); }
-
-    private final boolean hasNext( Pattern pattern )
-    {
-    	save = position;
-        
-        while (true)
-        {
-            if (find_token(pattern) != null)
-            {
-                valid = true;
-                rollback();
-                return true;
-            }
-            if (input)	read();
-            else
-            {
-            	rollback();
-            	return false;
-            }
-        }
-    }
-
-    private final String next( Pattern pattern )
-    {
-        while( true )
-        {
-            String token = find_token(pattern);
-            if( token != null )
-            {
-                valid	 = true;
-                skipped  = false;
                 return token;
             }
             if (input) read();
@@ -167,34 +140,6 @@ public final class Fio implements Iterator<String>, Closeable
         else				  return result;
     }
 
-    private String scan(Pattern pattern, int horizon)
-    {
-        while( true )
-        {
-            String token = find(pattern, horizon);
-            if( token != null )
-            {
-                valid = true;
-                return token;
-            }
-            if( input ) read();
-            else break;
-        }
-        return null;
-    }
-
-    public  boolean  hasNextBoolean ()  { return hasNext ( BOOLEAN );                       }
-    public  boolean  hasNextByte    ()  { return hasNext ( INTEGER );                       }
-    public  boolean  hasNextShort   ()  { return hasNext ( INTEGER );                       }
-    public  boolean  hasNextInt     ()  { return hasNext ( INTEGER );                       }
-    public  boolean  hasNextDecimal ()  { return hasNext ( DECIMAL );                       }
-    
-    public  boolean  nextBoolean    ()  { return Boolean . parseBoolean ( next(BOOLEAN) );  }
-    public  byte     nextByte       ()  { return Byte    . parseByte    ( next(INTEGER) );  }
-    public  short    nextShort      ()  { return Short   . parseShort   ( next(INTEGER) );  }
-    public  int      nextInt        ()  { return Integer . parseInt     ( next(INTEGER) );  }
-    public  float    nextDecimal    ()  { return Float   . parseFloat   ( next(DECIMAL) );  }
-    
 	// ---- [helpers] ------
     
     private final void rollback()
@@ -251,8 +196,8 @@ public final class Fio implements Iterator<String>, Closeable
 
         if (save != -1) save -= offset;
 
-        this . position -= offset;
-        this . buf      =  _buf;
+        this . position  -=  offset;
+        this . buf       =   _buf;
 
         this . matcher . reset ( buf );
         
@@ -356,6 +301,7 @@ public final class Fio implements Iterator<String>, Closeable
     private final String find( Pattern pattern, int horizon )
     {
         this . valid = false;
+
         this . matcher . usePattern( pattern );
         
         int bufferLimit   =  buf.limit();
@@ -366,27 +312,27 @@ public final class Fio implements Iterator<String>, Closeable
         {
             horizonLimit = position + horizon;
             
-            if (horizonLimit < bufferLimit) searchLimit = horizonLimit;
+            if( horizonLimit < bufferLimit ) searchLimit = horizonLimit;
         }
         
         matcher . region( position, searchLimit );
         
         if( matcher.find() )
         {
-            if (matcher.hitEnd() && ((searchLimit != horizonLimit) || ((searchLimit == horizonLimit) && matcher.requireEnd())))
+            if( matcher.hitEnd() && ((searchLimit != horizonLimit) || ((searchLimit == horizonLimit) && matcher.requireEnd())) )
             {
-            	input = true;
+            	this . input = true;
             	return null;
             }
             
-            position = matcher.end();
+            this . position = matcher.end();
             
-            return matcher.group();
+            return this . matcher.group();
         }
 
         if( closed ) return null;
 
-        if( (horizon == 0) || (searchLimit != horizonLimit) ) this . input = true;
+        if( ( horizon == 0 ) || ( searchLimit != horizonLimit ) ) this . input = true;
         
         return null;
     }
@@ -403,6 +349,61 @@ public final class Fio implements Iterator<String>, Closeable
         this . closed  =  true;
     }
 
+    public void remove()
+    { throw new UnsupportedOperationException(); }
+
+    private final boolean hasNext( Pattern pattern )
+    {
+    	save = position;
+        
+        while (true)
+        {
+            if (find_token(pattern) != null)
+            {
+                valid = true;
+                rollback();
+                return true;
+            }
+            if (input)	read();
+            else
+            {
+            	rollback();
+            	return false;
+            }
+        }
+    }
+
+    private final String next( Pattern pattern )
+    {
+        while( true )
+        {
+            String token = find_token(pattern);
+            if( token != null )
+            {
+                valid	 = true;
+                skipped  = false;
+                return token;
+            }
+            if (input) read();
+        }
+    }
+    
+    private String scan( Pattern pattern, int horizon )
+    {
+        while( true )
+        {
+            String token = find(pattern, horizon);
+            if( token != null )
+            {
+                valid = true;
+                return token;
+            }
+            if( input ) read();
+            else break;
+        }
+        return null;
+    }
+    
     // ---- [monkey test] ------
     
     public static void main(String ... args)
