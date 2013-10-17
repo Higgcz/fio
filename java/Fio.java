@@ -412,17 +412,42 @@ public final class Fio implements Iterator<String>, Closeable
     
     public static void main( String ... args )
     {
-        Fio fio = new Fio( System.in );
+        System.out.println("### Initialising System.in bridge ###");
+    	int dummy_size   =  1000;
+    	int square       =  dummy_size*dummy_size;
+    	StringBuilder sb  = new StringBuilder();
+    	
+    	sb.append(String.valueOf(dummy_size));
+    	
+    	for(int i = 0; i <= square ; i++){
+    		sb.append(' ');
+    		sb.append(String.valueOf(i));
+    	}
+    	
+    	InputStream test_in    =  new ByteArrayInputStream( sb.toString().getBytes() );
+    	    	
+    	System.setIn(test_in);
+    	
+    	System.out.println("### Starting test ###");
+    	
+        Fio fio   =  new Fio( System.in );
+        int size  =  fio.nextInt();
+        int a[]   =  new int [ size * size ];
 
-	int size = fio.nextInt();
-	short a[] = new short [ size * size ];
-	System.out.println("Size: " + size);
+        System.out.println("### Size is "+size+", number of elements to be red is "+(size*size)+" ###");
 
-	int i = 0;
-        for(; fio.hasNextShort(); i++ ) a[ i ] = fio.nextShort();
+        long time  =  System.nanoTime();
+        int i      =  0;
+        for(; i<a.length && fio.hasNextInt(); i++ ) a[ i ] = fio.nextInt();
 
-	System.out.println(a.length + " numbers loaded.");
+        time=((System.nanoTime()-time)/1000);
+        
+        System.out.println("### Test done in "+(time/1000)+"ms ###");
+        System.out.println("##### That is ~"+(time/a.length)+"ys per element ###");
 
+        i = 0;
+       // for(; i<a.length; i++)
+        //System.out.println("a [ "+i+" ] = "+a[i]);
         fio.close();
     }
 
