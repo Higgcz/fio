@@ -413,22 +413,22 @@ public final class Fio implements Iterator<String>, Closeable
     public static void main( String ... args )
     {
         System.out.println("### Initialising System.in bridge ###");
-    	int dummy_size   =  1000;
-    	int square       =  dummy_size*dummy_size;
-    	StringBuilder sb  = new StringBuilder();
-    	
-    	sb.append(String.valueOf(dummy_size));
-    	
-    	for(int i = 0; i <= square ; i++){
-    		sb.append(' ');
-    		sb.append(String.valueOf(i));
-    	}
-    	
-    	InputStream test_in    =  new ByteArrayInputStream( sb.toString().getBytes() );
-    	    	
-    	System.setIn(test_in);
-    	
-    	System.out.println("### Starting test ###");
+
+        int dummy_size    =  1000;
+        int square        =  dummy_size*dummy_size;
+        StringBuilder sb  =  new StringBuilder();
+
+        sb.append(String.valueOf(dummy_size));
+
+        for( int i = 0; i <= square ; i++ )
+        {
+            sb.append(' ');
+            sb.append(String.valueOf(i));
+        }
+
+        System.setIn( new ByteArrayInputStream( sb.toString().getBytes() ) );
+
+        System.out.println("### Starting test ###");
     	
         Fio fio   =  new Fio( System.in );
         int size  =  fio.nextInt();
