@@ -414,7 +414,14 @@ public final class Fio implements Iterator<String>, Closeable
     {
         Fio fio = new Fio( System.in );
 
-        while( fio.hasNextShort() ) System.out.println("RED: "+fio.nextShort());
+	int size = fio.nextInt();
+	short a[] = new short [ size * size ];
+	System.out.println("Size: " + size);
+
+	int i = 0;
+        for(; fio.hasNextShort(); i++ ) a[ i ] = fio.nextShort();
+
+	System.out.println(a.length + " numbers loaded.");
 
         fio.close();
     }
